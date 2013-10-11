@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>D3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/nv.d3.css" rel="stylesheet" media="screen">
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="js/nv.d3.min.js"></script>
+	
+	<style>
+	div.bar {
+	    display: inline-block;
+	    width: 20px;
+	    height: 75px;   /* We'll override this later */
+	    background-color: teal;
+	    margin-right: 5px;
+	}
+	svg{
+	}
+	</style>
+  </head>
+  <body>
+  	<div class="container">
+  		<div class="row">
+  			<div class="col-lg-12">
+		  		<div class="panel panel-default">
+					<div class="panel-heading">
+						<h1>D3</h1>
+						<div class="clearfix"></div>
+					</div>
+					<div class="panel-body">
+						<div id="chart">
+							<svg>
+							</svg>
+						</div>
+					</div>
+		  		</div>	
+  			</div>
+  		</div>
+  	</div>
+	<script type="text/javascript">
+	var chart = nv.models.multiBarChart();
+		d3.select('#chart svg').datum([
+		  {
+		    key: "Base Rental",
+		    color: "#00B2C0",
+		    values:
+		      [      
+		        { x : "2013", y : 75000 },
+		        { x : "2014", y : 81750 },
+		        { x : "2015", y : 89107.5 },
+		        { x : "2016", y : 97127.175 },
+		        { x : "2017", y : 105868.62075 },
+		        { x : "2018", y : 115868.62075 },
+		        { x : "2019", y : 125868.62075 },
+		        { x : "2020", y : 135868.62075 },
+		        { x : "2021", y : 145868.62075 },
+		        { x : "2022", y : 155868.62075 },
+		        { x : "2023", y : 165868.62075 }
+		      ]
+		  },
+		  {
+		    key: "Lease Outgoings",
+		    color: "yellow",
+		    values:
+		      [      
+		        { x : "2013", y : 5000 },
+		        { x : "2014", y : 1750 },
+		        { x : "2015", y : 9107.5 },
+		        { x : "2016", y : 7127.175 },
+		        { x : "2017", y : 5868.62075 },
+		        { x : "2018", y : 5868.62075 },
+		        { x : "2019", y : 5868.62075 },
+		        { x : "2020", y : 5868.62075 },
+		        { x : "2021", y : 5868.62075 },
+		        { x : "2022", y : 5868.62075 },
+		        { x : "2023", y : 5868.62075 }
+		      ]
+		  },
+		  {
+		    key: "Net Occupancy Cost",
+		    color: "#BD362F",
+		    values:
+		      [      
+		        { x : "2013", y : 5000 },
+		        { x : "2014", y : 1750 },
+		        { x : "2015", y : 9107.5 },
+		        { x : "2016", y : 7127.175 },
+		        { x : "2017", y : 5868.62075 }, 
+		        { x : "2018", y : 5868.62075 },
+		        { x : "2019", y : 5868.62075 },
+		        { x : "2020", y : 5868.62075 },
+		        { x : "2021", y : 5868.62075 },
+		        { x : "2022", y : 5868.62075 },
+		        { x : "2023", y : 5868.62075 }
+		      ]
+		  }
+		]).transition().duration(500).call(chart);
+		
+		chart.xAxis
+		  .tickFormat(d3.format(',f'));
+		
+		chart.yAxis
+		  .tickFormat(d3.format(',.1f'));
+	</script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.js"></script>
+  </body>
+</html>
