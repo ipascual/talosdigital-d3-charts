@@ -22,12 +22,13 @@
 	</style>
   </head>
   <body>
+  	<br /><br />
   	<div class="container">
   		<div class="row">
   			<div class="col-lg-12">
 		  		<div class="panel panel-default">
 					<div class="panel-heading">
-						<h1>D3</h1>
+						<p>D3 exercise to display a bar chart with line chart</p>
 						<div class="clearfix"></div>
 					</div>
 					<div class="panel-body">
@@ -41,8 +42,7 @@
   		</div>
   	</div>
 	<script type="text/javascript">
-	var chart = nv.models.multiBarChart();
-		d3.select('#chart svg').datum([
+	var data = [
 		  {
 		    key: "Base Rental",
 		    color: "#00B2C0",
@@ -50,60 +50,88 @@
 		      [      
 		        { x : "2013", y : 75000 },
 		        { x : "2014", y : 81750 },
-		        { x : "2015", y : 89107.5 },
-		        { x : "2016", y : 97127.175 },
-		        { x : "2017", y : 105868.62075 },
-		        { x : "2018", y : 115868.62075 },
-		        { x : "2019", y : 125868.62075 },
-		        { x : "2020", y : 135868.62075 },
-		        { x : "2021", y : 145868.62075 },
-		        { x : "2022", y : 155868.62075 },
-		        { x : "2023", y : 165868.62075 }
+		        { x : "2015", y : 89107 },
+		        { x : "2016", y : 97127 },
+		        { x : "2017", y : 105868 },
+		        { x : "2018", y : 115868 },
+		        { x : "2019", y : 125868 },
+		        { x : "2020", y : 135868 },
+		        { x : "2021", y : 145868 },
+		        { x : "2022", y : 155868 },
+		        { x : "2023", y : 165868 }
 		      ]
 		  },
 		  {
 		    key: "Lease Outgoings",
-		    color: "yellow",
+		    color: "blue",
 		    values:
 		      [      
 		        { x : "2013", y : 5000 },
 		        { x : "2014", y : 1750 },
-		        { x : "2015", y : 9107.5 },
-		        { x : "2016", y : 7127.175 },
-		        { x : "2017", y : 5868.62075 },
-		        { x : "2018", y : 5868.62075 },
-		        { x : "2019", y : 5868.62075 },
-		        { x : "2020", y : 5868.62075 },
-		        { x : "2021", y : 5868.62075 },
-		        { x : "2022", y : 5868.62075 },
-		        { x : "2023", y : 5868.62075 }
+		        { x : "2015", y : 9107 },
+		        { x : "2016", y : 7127 },
+		        { x : "2017", y : 15868 },
+		        { x : "2018", y : 25868 },
+		        { x : "2019", y : 65868 },
+		        { x : "2020", y : 25868 },
+		        { x : "2021", y : 35868 },
+		        { x : "2022", y : 55868 },
+		        { x : "2023", y : 45868 }
 		      ]
 		  },
 		  {
 		    key: "Net Occupancy Cost",
-		    color: "#BD362F",
+		    color: "red",
 		    values:
 		      [      
-		        { x : "2013", y : 5000 },
-		        { x : "2014", y : 1750 },
-		        { x : "2015", y : 9107.5 },
-		        { x : "2016", y : 7127.175 },
-		        { x : "2017", y : 5868.62075 }, 
-		        { x : "2018", y : 5868.62075 },
-		        { x : "2019", y : 5868.62075 },
-		        { x : "2020", y : 5868.62075 },
-		        { x : "2021", y : 5868.62075 },
-		        { x : "2022", y : 5868.62075 },
-		        { x : "2023", y : 5868.62075 }
+		        { x : "2013", y : 75000 + 1000 },
+		        { x : "2014", y : 81750 + 1000 },
+		        { x : "2015", y : 89107 + 1000 },
+		        { x : "2016", y : 97127 + 1000 },
+		        { x : "2017", y : 105868 + 1000 },
+		        { x : "2018", y : 25868 + 1000 },
+		        { x : "2019", y : 125868 + 1000 },
+		        { x : "2020", y : 135868 + 1000 },
+		        { x : "2021", y : 145868 + 1000 },
+		        { x : "2022", y : 155868 + 1000 },
+		        { x : "2023", y : 165868 + 1000 }
 		      ]
 		  }
-		]).transition().duration(500).call(chart);
-		
-		chart.xAxis
-		  .tickFormat(d3.format(',f'));
-		
-		chart.yAxis
-		  .tickFormat(d3.format(',.1f'));
+		];
+	
+	data[0].type = "bar"
+	data[0].yAxis = 2
+	data[1].type = "bar"
+	data[1].yAxis = 1
+	data[2].type = "line"
+	data[2].yAxis = 1
+
+	
+	
+	nv.addGraph(function() {
+	    var chart = nv.models.multiChart()
+	        .margin({top: 30, right: 60, bottom: 50, left: 70})
+	        .color(d3.scale.category10().range());
+	
+	    chart.xAxis
+	        .tickFormat(d3.format('f'));
+	
+	    chart.yAxis1
+	        .tickFormat(d3.format(',f'));
+	
+	    chart.yAxis2
+	        .tickFormat(d3.format(',f'));
+	
+	
+	    d3.select('#chart svg')
+	      .datum(data)
+	      .transition().duration(500).call(chart);
+	
+	    return chart;
+	});
+		  
+		  
+	   nv.utils.windowResize(function() { d3.select('#chart svg').call(chart) });
 	</script>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="//code.jquery.com/jquery.js"></script>
