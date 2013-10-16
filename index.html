@@ -100,7 +100,7 @@
 		];
 	
 	data[0].type = "bar"
-	data[0].yAxis = 2
+	data[0].yAxis = 1
 	data[1].type = "bar"
 	data[1].yAxis = 1
 	data[2].type = "line"
@@ -121,7 +121,7 @@
 	
 	    chart.yAxis2
 	        .tickFormat(d3.format(',f'));
-	
+		chart.stacked();
 	
 	    d3.select('#chart svg')
 	      .datum(data)
