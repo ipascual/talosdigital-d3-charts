@@ -3,7 +3,6 @@ nv.models.tdMultiBar = function() {
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
-
   var margin = {top: 0, right: 0, bottom: 0, left: 0}
     , width = 960
     , height = 500
@@ -27,18 +26,22 @@ nv.models.tdMultiBar = function() {
     , yRange
     , groupSpacing = 0.1
     , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout')
+    , interpolate = "linear" // controls the line interpolation
+    , defined = function(d,i) { return !isNaN(getY(d)) && getY(d) !== null } // allows a line to be not continuous when it is not defined
     ;
 
-  //============================================================
-
+  //============================================================          
 
   //============================================================
   // Private Variables
   //------------------------------------------------------------
 
-  var x0, y0 //used to store previous scales
-      ;
+  var x0, 
+  	y0 //used to store previous scales
+    ;
 
+  x0 = x0 || x;
+  y0 = y0 || y;
   //============================================================
 
 
@@ -183,13 +186,21 @@ nv.models.tdMultiBar = function() {
           .style('stroke-opacity', 1)
           .style('fill-opacity', .75);
 
-
+		 
       var bars = groups.selectAll('rect.nv-bar')
-          .data(function(d) { return (hideable && !data.length) ? hideable.values : d.values });
+          //.data(function(d) { return (hideable && !data.length ) ? hideable.values : d.values });
+		  .data(function(d) { if(d.type == "bar"){ return d.values }else{ return [] } });
+		  
+		  bars.exit().remove();
+      
+      var lines = groups.selectAll('path.nv-line')
+          //.data(function(d) { return (hideable && !data.length ) ? hideable.values : d.values });
+         .data(function(d) { if(d.type == "line"){ return d.values }else{ return [] } });
 
-      bars.exit().remove();
+		 lines.exit().remove();
 
 	  
+      //barChart
       var barsEnter = bars.enter()
       .append('rect')
           .attr('class', function(d,i) { return getY(d,i) < 0 ? 'nv-bar negative' : 'nv-bar positive'})
@@ -262,6 +273,23 @@ nv.models.tdMultiBar = function() {
           .style('fill', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); })
           .style('stroke', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); });
       }
+      
+      //This is the accessor function we talked about above
+ var lineFunction = d3.svg.line()
+                          .x(function(d) { return d.x; })
+                          .y(function(d) { return d.y; })
+                         .interpolate("linear");
+      	
+      var linesEnter = lines.enter()
+      .append('path')
+          .attr('class', 'nv-line')
+          .attr('talos', 'digital')
+          .attr('d',lineFunction(lineData))
+          .attr("stroke", "blue")
+		  .attr("stroke-width", 2)
+          .attr("fill", "none");
+          //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; });
+
 
 
       if (stacked)
@@ -341,6 +369,27 @@ nv.models.tdMultiBar = function() {
     margin.left   = typeof _.left   != 'undefined' ? _.left   : margin.left;
     return chart;
   };
+  
+  
+  
+  
+  
+  chart.x = function(_) {
+    if (!arguments.length) return getX;
+    getX = _;
+    scatter.x(_);
+    return chart;
+  };
+
+  chart.y = function(_) {
+    if (!arguments.length) return getY;
+    getY = _;
+    scatter.y(_);
+    return chart;
+  };
+  
+  
+  
 
   chart.width = function(_) {
     if (!arguments.length) return width;
@@ -453,6 +502,18 @@ nv.models.tdMultiBar = function() {
   chart.groupSpacing = function(_) {
     if (!arguments.length) return groupSpacing;
     groupSpacing = _;
+    return chart;
+  };
+  
+  chart.interpolate = function(_) {
+    if (!arguments.length) return interpolate;
+    interpolate = _;
+    return chart;
+  };
+
+  chart.defined = function(_) {
+    if (!arguments.length) return defined;
+    defined = _;
     return chart;
   };
 
