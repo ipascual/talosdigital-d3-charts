@@ -27,7 +27,7 @@ nv.models.multiBarChart = function() {
     , tooltips = true
     , tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
-               '<p>' +  y + ' on ' + x + '</p>'
+               '<p>' +  y + ' on ' + x + '</p>';
       }
     , x //can be accessed via chart.xScale()
     , y //can be accessed via chart.yScale()
@@ -35,7 +35,7 @@ nv.models.multiBarChart = function() {
     , defaultState = null
     , noData = "No Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
-    , controlWidth = function() { return showControls ? 180 : 0 }
+    , controlWidth = function() { return showControls ? 180 : 0; }
     , transitionDuration = 250
     ;
 
@@ -47,7 +47,7 @@ nv.models.multiBarChart = function() {
     .tickPadding(7)
     .highlightZero(true)
     .showMaxMin(false)
-    .tickFormat(function(d) { return d })
+    .tickFormat(function(d) { return d; })
     ;
   yAxis
     .orient((rightAlignYAxis) ? 'right' : 'left')
@@ -85,11 +85,11 @@ nv.models.multiBarChart = function() {
           availableHeight = (height || parseInt(container.style('height')) || 400)
                              - margin.top - margin.bottom;
 
-      chart.update = function() { container.transition().duration(transitionDuration).call(chart) };
+      chart.update = function() { container.transition().duration(transitionDuration).call(chart); };
       chart.container = this;
 
       //set state.disabled
-      state.disabled = data.map(function(d) { return !!d.disabled });
+      state.disabled = data.map(function(d) { return !!d.disabled; });
 
       if (!defaultState) {
         var key;
@@ -104,7 +104,7 @@ nv.models.multiBarChart = function() {
       //------------------------------------------------------------
       // Display noData message if there's nothing to show.
 
-      if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
+      if (!data || !data.length || !data.filter(function(d) { return d.values.length; }).length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
 
         noDataText.enter().append('text')
@@ -115,7 +115,7 @@ nv.models.multiBarChart = function() {
         noDataText
           .attr('x', margin.left + availableWidth / 2)
           .attr('y', margin.top + availableHeight / 2)
-          .text(function(d) { return d });
+          .text(function(d) { return d; });
 
         return chart;
       } else {
@@ -159,7 +159,7 @@ nv.models.multiBarChart = function() {
         if (multibar.barColor())
           data.forEach(function(series,i) {
             series.color = d3.rgb('#ccc').darker(i * 1.5).toString();
-          })
+          });
 
         g.select('.nv-legendWrap')
             .datum(data)
@@ -208,16 +208,16 @@ nv.models.multiBarChart = function() {
       // Main Chart Component(s)
 
       multibar
-        .disabled(data.map(function(series) { return series.disabled }))
+        .disabled(data.map(function(series) { return series.disabled; }))
         .width(availableWidth)
         .height(availableHeight)
         .color(data.map(function(d,i) {
           return d.color || color(d, i);
-        }).filter(function(d,i) { return !data[i].disabled }))
+        }).filter(function(d,i) { return !data[i].disabled; }));
 
 
       var barsWrap = g.select('.nv-barsWrap')
-          .datum(data.filter(function(d) { return !d.disabled }))
+          .datum(data.filter(function(d) { return !d.disabled; }));
 
       barsWrap.transition().call(multibar);
 
@@ -242,7 +242,7 @@ nv.models.multiBarChart = function() {
 
           xTicks
               .selectAll('line, text')
-              .style('opacity', 1)
+              .style('opacity', 1);
 
           if (staggerLabels) {
               var getTranslate = function(x,y) {
@@ -332,7 +332,7 @@ nv.models.multiBarChart = function() {
       });
 
       dispatch.on('tooltipShow', function(e) {
-        if (tooltips) showTooltip(e, that.parentNode)
+        if (tooltips) showTooltip(e, that.parentNode);
       });
 
       // Update chart from a state object passed to event handler
@@ -523,7 +523,7 @@ nv.models.multiBarChart = function() {
 
 
   return chart;
-}
+};
 
 	var lineChart;
 	
