@@ -1,47 +1,5 @@
 /* MultiBar plus Line custom model */
-nv.models.multiBarChartPlusLine = function() {
-
-
-//DUVER
-var lineChart;
-	
-nv.addGraph(function() {
-  lineChart = nv.models.lineChart()
-  .options({
-    margin: {left: 100, bottom: 140},
-    x: function(d,i) { return i},
-    showXAxis: false,
-    showYAxis: false,
-    transitionDuration: 250
-  })
-  ;
-
-  // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
-  lineChart.xAxis
-    .axisLabel("Time (s)")
-    .tickFormat(d3.format(',.1f'));
-
-  lineChart.yAxis
-    .axisLabel('Voltage (v)')
-    .tickFormat(d3.format(',.2f'))
-    ;
-
-  d3.select('#line')
-  	.attr('legend', function(){
-	  	d3.select('#line g.nv-series').attr('class', 'noc-legend');
-  	})
-    .datum(data)
-    .call(lineChart);
-
-  //TODO: Figure out a good way to do this automatically
-  nv.utils.windowResize(lineChart.update);
-  //nv.utils.windowResize(function() { d3.select('#chart1 svg').call(chart) });
-
-  lineChart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-
-  return(lineChart);
-});
-	
+nv.models.tdMultiBarLineChart = function() {
   "use strict";
   //============================================================
   // Public Variables with Default Settings
