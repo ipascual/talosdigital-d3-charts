@@ -1,8 +1,10 @@
-nv.models.tdMultiBar = function() {
+
+nv.models.multiBar = function() {
   "use strict";
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
+
   var margin = {top: 0, right: 0, bottom: 0, left: 0}
     , width = 960
     , height = 500
@@ -26,22 +28,18 @@ nv.models.tdMultiBar = function() {
     , yRange
     , groupSpacing = 0.1
     , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout')
-    , interpolate = "linear" // controls the line interpolation
-    , defined = function(d,i) { return !isNaN(getY(d)) && getY(d) !== null } // allows a line to be not continuous when it is not defined
     ;
 
-  //============================================================          
+  //============================================================
+
 
   //============================================================
   // Private Variables
   //------------------------------------------------------------
 
-  var x0, 
-  	y0 //used to store previous scales
-    ;
+  var x0, y0 //used to store previous scales
+      ;
 
-  x0 = x0 || x;
-  y0 = y0 || y;
   //============================================================
 
 
@@ -70,12 +68,10 @@ nv.models.tdMultiBar = function() {
 
 
       //add series index to each data point for reference
-      data = data.map(function(series, i) {
-        series.values = series.values.map(function(point) {
+      data.forEach(function(series, i) {
+        series.values.forEach(function(point) {
           point.series = i;
-          return point;
         });
-        return series;
       });
 
 
@@ -91,7 +87,7 @@ nv.models.tdMultiBar = function() {
               f.y1 = negBase;
               negBase = negBase - f.size;
             } else
-            { 
+            {
               f.y1 = f.size + posBase;
               posBase = posBase + f.size;
             }
@@ -170,7 +166,7 @@ nv.models.tdMultiBar = function() {
       groups.exit()
         .transition()
         .selectAll('rect.nv-bar')
-        .delay(function(d,i) { 
+        .delay(function(d,i) {
              return i * delay/ data[0].values.length;
         })
           .attr('y', function(d) { return stacked ? y0(d.y0) : y0(0) })
@@ -186,23 +182,14 @@ nv.models.tdMultiBar = function() {
           .style('stroke-opacity', 1)
           .style('fill-opacity', .75);
 
-		 
+
       var bars = groups.selectAll('rect.nv-bar')
-          //.data(function(d) { return (hideable && !data.length ) ? hideable.values : d.values });
-		  .data(function(d) { if(d.type == "bar"){ return d.values }else{ return [] } });
-		  
-		  bars.exit().remove();
-      
-      var lines = groups.selectAll('path.nv-line')
-          //.data(function(d) { return (hideable && !data.length ) ? hideable.values : d.values });
-         .data(function(d) { if(d.type == "line"){ return d.values }else{ return [] } });
+          .data(function(d) { return (hideable && !data.length) ? hideable.values : d.values });
 
-		 lines.exit().remove();
+      bars.exit().remove();
 
-	  
-      //barChart
-      var barsEnter = bars.enter()
-      .append('rect')
+
+      var barsEnter = bars.enter().append('rect')
           .attr('class', function(d,i) { return getY(d,i) < 0 ? 'nv-bar negative' : 'nv-bar positive'})
           .attr('x', function(d,i,j) {
               return stacked ? 0 : (j * x.rangeBand() / data.length )
@@ -273,63 +260,11 @@ nv.models.tdMultiBar = function() {
           .style('fill', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); })
           .style('stroke', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); });
       }
-      
-      //This is the accessor function we talked about above
-	  var lineFunction = d3.svg.line()
-  	    .x(function(d,i) { nv.log(d); return nv.utils.NaNtoZero(x0(getX(d))) })
-  		.y(function(d,i) { return nv.utils.NaNtoZero(y0(getY(d))) })
-        .interpolate("linear");
-        
-      var linesEnter = lines.enter()
-      .append('path')
-          .attr('class', 'nv-line')
-          .attr('talos', 'digital')
-          .attr('d',lineFunction(data[2].values))
-          .attr("stroke", "blue")
-		  .attr("stroke-width", 2)
-          .attr("fill", "none");
-          //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; });
-       lines.on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
-            d3.select(this).classed('hover', true);
-            dispatch.elementMouseover({
-              value: getY(d,i),
-              point: d,
-              series: data[d.series],
-              pos: [x(getX(d,i)) + (x.rangeBand() * (stacked ? data.length / 2 : d.series + .5) / data.length), y(getY(d,i) + (stacked ? d.y0 : 0))],  // TODO: Figure out why the value appears to be shifted
-              pointIndex: i,
-              seriesIndex: d.series,
-              e: d3.event
-            });
-          })
-          .on('mouseout', function(d,i) {
-            d3.select(this).classed('hover', false);
-            dispatch.elementMouseout({
-              value: getY(d,i),
-              point: d,
-              series: data[d.series],
-              pointIndex: i,
-              seriesIndex: d.series,
-              e: d3.event
-            });
-          })
-		  .on('click', function(d,i) {
-	        dispatch.elementClick({
-	          value: getY(d,i),
-	          point: d,
-	          series: data[d.series],
-	          pos: [x(getX(d,i)) + (x.rangeBand() * (stacked ? data.length / 2 : d.series + .5) / data.length), y(getY(d,i) + (stacked ? d.y0 : 0))],  // TODO: Figure out why the value appears to be shifted
-	          pointIndex: i,
-	          seriesIndex: d.series,
-	          e: d3.event
-	        });
-	        d3.event.stopPropagation();
-	      })
-
 
 
       if (stacked)
           bars.transition()
-            .delay(function(d,i) { 
+            .delay(function(d,i) {
 
                   return i * delay / data[0].values.length;
             })
@@ -346,7 +281,7 @@ nv.models.tdMultiBar = function() {
             .attr('width', x.rangeBand() / (stacked ? 1 : data.length) );
       else
           bars.transition()
-            .delay(function(d,i) { 
+            .delay(function(d,i) {
                 return i * delay/ data[0].values.length;
             })
             .attr('x', function(d,i) {
@@ -383,7 +318,7 @@ nv.models.tdMultiBar = function() {
   chart.dispatch = dispatch;
 
   chart.options = nv.utils.optionsFunc.bind(chart);
-  
+
   chart.x = function(_) {
     if (!arguments.length) return getX;
     getX = _;
@@ -404,27 +339,6 @@ nv.models.tdMultiBar = function() {
     margin.left   = typeof _.left   != 'undefined' ? _.left   : margin.left;
     return chart;
   };
-  
-  
-  
-  
-  
-  chart.x = function(_) {
-    if (!arguments.length) return getX;
-    getX = _;
-    scatter.x(_);
-    return chart;
-  };
-
-  chart.y = function(_) {
-    if (!arguments.length) return getY;
-    getY = _;
-    scatter.y(_);
-    return chart;
-  };
-  
-  
-  
 
   chart.width = function(_) {
     if (!arguments.length) return width;
@@ -537,18 +451,6 @@ nv.models.tdMultiBar = function() {
   chart.groupSpacing = function(_) {
     if (!arguments.length) return groupSpacing;
     groupSpacing = _;
-    return chart;
-  };
-  
-  chart.interpolate = function(_) {
-    if (!arguments.length) return interpolate;
-    interpolate = _;
-    return chart;
-  };
-
-  chart.defined = function(_) {
-    if (!arguments.length) return defined;
-    defined = _;
     return chart;
   };
 
