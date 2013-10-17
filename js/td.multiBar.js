@@ -26,7 +26,7 @@ nv.models.tdMultiBar = function() {
     , yRange
     , groupSpacing = 0.1
     , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout')
-    , interpolate = "linear" // controls the line interpolation
+    , interpolate = "step-before" // controls the line interpolation
     , defined = function(d,i) { return !isNaN(getY(d)) && getY(d) !== null } // allows a line to be not continuous when it is not defined
     ;
 
@@ -189,15 +189,17 @@ nv.models.tdMultiBar = function() {
 		 
       var bars = groups.selectAll('rect.nv-bar')
           //.data(function(d) { return (hideable && !data.length ) ? hideable.values : d.values });
-		  .data(function(d) { if(d.type == "bar"){ return d.values }else{ return [] } });
-		  
+		  .data(function(d) { if(d.type === "bar"){ return d.values }else{ return [] } });
+
 		  bars.exit().remove();
       
-      var lines = groups.selectAll('path.nv-line')
-          //.data(function(d) { return (hideable && !data.length ) ? hideable.values : d.values });
-         .data(function(d) { if(d.type == "line"){ return d.values }else{ return [] } });
-
-		 lines.exit().remove();
+      var lines = [];
+		for(var i in data) {
+			if(data[i].type == "line") {
+				lines.push(data[i]);
+			}
+		}
+		lines = groups.selectAll('path.nv-line').data(lines);
 
 	  
       //barChart
@@ -276,20 +278,19 @@ nv.models.tdMultiBar = function() {
       
       //This is the accessor function we talked about above
 	  var lineFunction = d3.svg.line()
-  	    .x(function(d,i) { nv.log(d); return nv.utils.NaNtoZero(x0(getX(d))) })
-  		.y(function(d,i) { return nv.utils.NaNtoZero(y0(getY(d))) })
+  	    .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
+  		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
         .interpolate("linear");
         
       var linesEnter = lines.enter()
       .append('path')
-          .attr('class', 'nv-line')
           .attr('talos', 'digital')
-          .attr('d',lineFunction(data[2].values))
+          .attr('d', function(d,i) { return lineFunction(d.values) })
           .attr("stroke", "blue")
 		  .attr("stroke-width", 2)
-          .attr("fill", "none");
-          //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; });
-       lines.on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
+          .attr("fill", "none")
+          .attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
+		  .on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
             d3.select(this).classed('hover', true);
             dispatch.elementMouseover({
               value: getY(d,i),
