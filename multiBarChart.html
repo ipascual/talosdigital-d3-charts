@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>D3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="css/nv.d3.css" rel="stylesheet" media="screen">
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="js/nv.d3.js"></script>
+	<script src="js/talosModel.js"></script>
+	
+	<style>
+	div.bar {
+	    display: inline-block;
+	    width: 20px;
+	    height: 75px;   /* We'll override this later */
+	    background-color: teal;
+	    margin-right: 5px;
+	}
+	.nv-y, .nv-x{
+		font-family: sans-serif;
+		font-size: 14px;
+		color: #666;
+	}
+	#line{
+		margin-bottom: -400px;
+		z-index: 100;
+	}
+	g.nv-lineChart g.nv-legend{
+		display: none;
+	}
+	
+	</style>
+  </head>
+  <body>
+  	<br /><br />
+  	<div class="container">
+  		<div class="row">
+  			<div class="col-lg-12">
+		  		<div class="panel panel-default">
+					<div class="panel-heading">
+						<p>D3 exercise to display a bar chart with line chart</p>
+						<div class="clearfix"></div>
+					</div>
+					<div class="panel-body">
+						<div id="chart">
+							<svg id="line"></svg>
+							<svg id="main"></svg>
+						</div>
+					</div>
+		  		</div>	
+  			</div>
+  		</div>
+  	</div>
+	<script type="text/javascript">
+	var data = [
+		  {
+		    key: "Base Rental",
+		    color: "#00B2C0",
+		    values:
+		      [      
+		        { x : 2013, y : 75000 },
+		        { x : 2014, y : 81750 },
+		        { x : 2015, y : 89107 },
+		        { x : 2016, y : 97127 },
+		        { x : 2017, y : 105868 },
+		        { x : 2018, y : 115868 },
+		        { x : 2019, y : 125868 },
+		        { x : 2020, y : 135868 },
+		        { x : 2021, y : 145868 },
+		        { x : 2022, y : 155868 },
+		        { x : 2023, y : 165868 }
+		      ]
+		  },
+		  {
+		    key: "Lease Outgoings",
+		    color: "blue",
+		    values:
+		      [      
+		        { x : 2013, y : 5000 },
+		        { x : 2014, y : 1750 },
+		        { x : 2015, y : 9107 },
+		        { x : 2016, y : 7127 },
+		        { x : 2017, y : 15868 },
+		        { x : 2018, y : 25868 },
+		        { x : 2019, y : 65868 },
+		        { x : 2020, y : 25868 },
+		        { x : 2021, y : 35868 },
+		        { x : 2022, y : 55868 },
+		        { x : 2023, y : 45868 }
+		      ]
+		  },
+		  {
+		    key: "Net Occupancy Cost",
+		    color: "orange",
+		    values:
+		      [      
+		        { x : 2013, y : 75000 + 1000 },
+		        { x : 2014, y : 81750 + 1000 },
+		        { x : 2015, y : 89107 + 1000 },
+		        { x : 2016, y : 97127 + 1000 },
+		        { x : 2017, y : 105868 + 1000 },
+		        { x : 2018, y : 25868 + 1000 },
+		        { x : 2019, y : 125868 + 1000 },
+		        { x : 2020, y : 135868 + 1000 },
+		        { x : 2021, y : 145868 + 1000 },
+		        { x : 2022, y : 155868 + 1000 },
+		        { x : 2023, y : 165868 + 1000 }
+		      ]
+		 }
+		];
+	
+		
+		
+		var chart;
+		nv.addGraph(function() {
+		    chart = nv.models.multiBarChartPlusLine()
+		      .barColor(d3.scale.category20().range())
+		      .margin({bottom: 100})
+		      .transitionDuration(300)
+		      .delay(0)
+		      .rotateLabels(45)
+		      .groupSpacing(0.1)
+		      ;
+		
+		    chart.multibar
+		      .hideable(true);
+		
+		    chart.reduceXTicks(false).staggerLabels(true);
+		
+		    chart.xAxis
+		        .axisLabel("Current Index")
+		        .showMaxMin(true)
+		        .tickFormat(d3.format('f'));
+		
+		    chart.yAxis
+		        .tickFormat(d3.format(',f'));
+		
+		    d3.select('#chart svg#main')
+		       .datum(data)
+		       .call(chart);
+		
+		    nv.utils.windowResize(chart.update);
+		
+		    chart.dispatch.on('stateChange', function(e) { 
+		    	nv.log('New State:', JSON.stringify(e));
+		    });
+		
+		    return chart;
+		});
+		
+		
+
+	</script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.js"></script>
+  </body>
+</html>
