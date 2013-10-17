@@ -189,8 +189,9 @@ nv.models.tdMultiBar = function() {
 
       bars.exit().remove();
 
-
-      var barsEnter = bars.enter().append('rect')
+	  
+      var barsEnter = bars.enter()
+      .append('rect')
           .attr('class', function(d,i) { return getY(d,i) < 0 ? 'nv-bar negative' : 'nv-bar positive'})
           .attr('x', function(d,i,j) {
               return stacked ? 0 : (j * x.rangeBand() / data.length )

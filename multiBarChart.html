@@ -8,7 +8,8 @@
     <link href="css/nv.d3.css" rel="stylesheet" media="screen">
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="js/nv.d3.js"></script>
-	<script src="js/talosModel.js"></script>
+	<script src="js/td.multiBar.js"></script>
+	<script src="js/td.multiBarLineChart.js"></script>
 	
 	<style>
 	div.bar {
@@ -58,6 +59,7 @@
 		  {
 		    key: "Base Rental",
 		    color: "#00B2C0",
+		    type: "bar",
 		    values:
 		      [      
 		        { x : 2013, y : 75000 },
@@ -76,6 +78,7 @@
 		  {
 		    key: "Lease Outgoings",
 		    color: "blue",
+		    type: "bar",
 		    values:
 		      [      
 		        { x : 2013, y : 5000 },
@@ -94,6 +97,7 @@
 		  {
 		    key: "Net Occupancy Cost",
 		    color: "orange",
+		    type: "line",
 		    values:
 		      [      
 		        { x : 2013, y : 75000 + 1000 },
@@ -115,7 +119,7 @@
 		
 		var chart;
 		nv.addGraph(function() {
-		    chart = nv.models.multiBarChartPlusLine()
+		    chart = nv.models.tdMultiBarLineChart()
 		      .barColor(d3.scale.category20().range())
 		      .margin({bottom: 100})
 		      .transitionDuration(300)

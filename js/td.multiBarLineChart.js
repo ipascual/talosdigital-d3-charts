@@ -5,7 +5,7 @@ nv.models.tdMultiBarLineChart = function() {
   // Public Variables with Default Settings
   //------------------------------------------------------------
 
-  var multibar = nv.models.multiBar()
+  var multibar = nv.models.tdMultiBar()
     , xAxis = nv.models.axis()
     , yAxis = nv.models.axis()
     , legend = nv.models.legend()
