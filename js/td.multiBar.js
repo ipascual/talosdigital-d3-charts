@@ -280,6 +280,8 @@ nv.models.tdMultiBar = function() {
           .attr('class', function(d,i) { return getY(d,i) < 0 ? 'nv-bar negative' : 'nv-bar positive'})
           .transition()
           .attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
+          
+          var offsetLine = bars.attr('width') / 2;
 
       if (barColor) {
         if (!disabled) disabled = data.map(function() { return true });
@@ -289,15 +291,16 @@ nv.models.tdMultiBar = function() {
       }
       
       //This is the accessor function we talked about above
+     
 	  var lineFunction = d3.svg.line()
-  	    .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
+  	    .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d)) + offsetLine) })
   		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
         .interpolate("linear");
         
       var linesEnter = lines.enter()
       .append('path')
           .attr('d', function(d,i) { return lineFunction(d.values) })
-          .attr("stroke", "blue")
+          .attr("stroke", "yellow")
 		  .attr("stroke-width", 2)
           .attr("fill", "none")
           //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })

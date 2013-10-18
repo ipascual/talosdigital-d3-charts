@@ -115,7 +115,7 @@
 		 },
 		 {
 		    key: "Line Test",
-		    color: "violet",
+		    color: "yellow",
 		    type: "line",
 		    values:
 		      [      
@@ -167,7 +167,7 @@
 		    nv.utils.windowResize(chart.update);
 		
 		    chart.dispatch.on('stateChange', function(e) { 
-		    	nv.log('New State:', JSON.stringify(e));
+				d3.selectAll('path').remove();
 		    });
 		
 		    return chart;
