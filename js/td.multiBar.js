@@ -13,7 +13,7 @@ nv.models.tdMultiBar = function() {
     , getY = function(d) { return d.y }
     , forceY = [0] // 0 is forced by default.. this makes sense for the majority of bar graphs... user can always do chart.forceY([]) to remove
     , clipEdge = true
-    , stacked = false
+    , stacked = true
     , stackOffset = 'zero' // options include 'silhouette', 'wiggle', 'expand', 'zero', or a custom function
     , color = nv.utils.defaultColor()
     , hideable = false
@@ -192,6 +192,17 @@ nv.models.tdMultiBar = function() {
 		  .data(function(d) { if(d.type === "bar"){ return d.values }else{ return [] } });
 
 		  bars.exit().remove();
+		 
+      /*var bars = [];
+		for(var i in data) {
+			if(data[i].type == "bar") {
+				nv.log(data[i].values);
+				bars.push(data[i].values);
+			}
+		}
+		bars = groupsBars.selectAll('rect.nv-bar').data(bars);
+		bars.exit().remove();
+*/
       
       var lines = [];
 		for(var i in data) {
@@ -200,6 +211,7 @@ nv.models.tdMultiBar = function() {
 			}
 		}
 		lines = groups.selectAll('path.nv-line').data(lines);
+		lines.exit().remove();
 
 	  
       //barChart
@@ -284,12 +296,11 @@ nv.models.tdMultiBar = function() {
         
       var linesEnter = lines.enter()
       .append('path')
-          .attr('talos', 'digital')
           .attr('d', function(d,i) { return lineFunction(d.values) })
           .attr("stroke", "blue")
 		  .attr("stroke-width", 2)
           .attr("fill", "none")
-          .attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
+          //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
 		  .on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
             d3.select(this).classed('hover', true);
             dispatch.elementMouseover({
@@ -328,7 +339,8 @@ nv.models.tdMultiBar = function() {
 
 
 
-      if (stacked)
+      if (stacked){
+
           bars.transition()
             .delay(function(d,i) { 
 
@@ -345,7 +357,9 @@ nv.models.tdMultiBar = function() {
                   return stacked ? 0 : (d.series * x.rangeBand() / data.length )
             })
             .attr('width', x.rangeBand() / (stacked ? 1 : data.length) );
-      else
+
+	  }
+      else{
           bars.transition()
             .delay(function(d,i) { 
                 return i * delay/ data[0].values.length;
@@ -364,8 +378,9 @@ nv.models.tdMultiBar = function() {
             .attr('height', function(d,i) {
                 return Math.max(Math.abs(y(getY(d,i)) - y(0)),1) || 0;
             });
-
-
+			
+			d3.selectAll('path').remove();
+		}
 
       //store old scales for use in transitions on update
       x0 = x.copy();
