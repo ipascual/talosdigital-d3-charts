@@ -26,7 +26,7 @@ nv.models.tdMultiBar = function() {
     , yRange
     , groupSpacing = 0.1
     , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout')
-    , interpolate = "step-before" // controls the line interpolation
+    , interpolate = "linear" // controls the line interpolation
     , defined = function(d,i) { return !isNaN(getY(d)) && getY(d) !== null } // allows a line to be not continuous when it is not defined
     ;
 
@@ -281,7 +281,7 @@ nv.models.tdMultiBar = function() {
           .transition()
           .attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
           
-          var offsetLine = bars.attr('width') / 2;
+          
 
       if (barColor) {
         if (!disabled) disabled = data.map(function() { return true });
@@ -291,7 +291,7 @@ nv.models.tdMultiBar = function() {
       }
       
       //This is the accessor function we talked about above
-     
+	  var offsetLine = bars.attr('width') / 2;
 	  var lineFunction = d3.svg.line()
   	    .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d)) + offsetLine) })
   		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
@@ -360,7 +360,8 @@ nv.models.tdMultiBar = function() {
                   return stacked ? 0 : (d.series * x.rangeBand() / data.length )
             })
             .attr('width', x.rangeBand() / (stacked ? 1 : data.length) );
-
+			
+			var offsetLine = bars.attr('width') / 2;
 	  }
       else{
           bars.transition()
@@ -382,7 +383,7 @@ nv.models.tdMultiBar = function() {
                 return Math.max(Math.abs(y(getY(d,i)) - y(0)),1) || 0;
             });
 			
-			d3.selectAll('path').remove();
+//			d3.selectAll('path').remove();
 		}
 
       //store old scales for use in transitions on update
