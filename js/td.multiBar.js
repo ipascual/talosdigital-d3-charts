@@ -111,11 +111,13 @@ nv.models.tdMultiBar = function() {
 
       x   .domain(xDomain || d3.merge(seriesData).map(function(d) { return d.x }))
           .rangeBands(xRange || [0, availableWidth], groupSpacing);
-
-      //y   .domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) { return d.y + (stacked ? d.y1 : 0) }).concat(forceY)))
+		  
+		    //y   .domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) { return d.y + (stacked ? d.y1 : 0) }).concat(forceY)))
       y   .domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) { return stacked ? (d.y > 0 ? d.y1 : d.y1 + d.y ) : d.y }).concat(forceY)))
           .range(yRange || [availableHeight, 0]);
-
+	if(stacked){
+		y0 = y;
+	}
       // If scale's domain don't have a range, slightly adjust to make one... so a chart can show a single data point
       if (x.domain()[0] === x.domain()[1])
         x.domain()[0] ?
@@ -153,7 +155,7 @@ nv.models.tdMultiBar = function() {
 
       defsEnter.append('clipPath')
           .attr('id', 'nv-edge-clip-' + id)
-        .append('rect');
+		  .append('rect');
       wrap.select('#nv-edge-clip-' + id + ' rect')
           .attr('width', availableWidth)
           .attr('height', availableHeight);
@@ -164,27 +166,27 @@ nv.models.tdMultiBar = function() {
 
       var groups = wrap.select('.nv-groups').selectAll('.nv-group')
           .data(function(d) { return d }, function(d,i) { return i });
-      groups.enter().append('g')
-          .style('stroke-opacity', 1e-6)
-          .style('fill-opacity', 1e-6);
-      groups.exit()
-        .transition()
-        .selectAll('rect.nv-bar')
-        .delay(function(d,i) { 
-             return i * delay/ data[0].values.length;
-        })
+	      groups.enter().append('g')
+	          .style('stroke-opacity', 1e-6)
+	          .style('fill-opacity', 1e-6);
+	      groups.exit()
+	        .transition()
+	        .selectAll('rect.nv-bar')
+	        .delay(function(d,i) { 
+	             return i * delay/ data[0].values.length;
+	        })
           .attr('y', function(d) { return stacked ? y0(d.y0) : y0(0) })
           .attr('height', 0)
           .remove();
-      groups
-          .attr('class', function(d,i) { return 'nv-group nv-series-' + i })
-          .classed('hover', function(d) { return d.hover })
-          .style('fill', function(d,i){ return color(d, i) })
-          .style('stroke', function(d,i){ return color(d, i) });
-      groups
-          .transition()
-          .style('stroke-opacity', 1)
-          .style('fill-opacity', .75);
+	      groups
+	          .attr('class', function(d,i) { return 'nv-group nv-series-' + i })
+	          .classed('hover', function(d) { return d.hover })
+	          .style('fill', function(d,i){ return color(d, i) })
+	          .style('stroke', function(d,i){ return color(d, i) });
+	      groups
+	          .transition()
+	          .style('stroke-opacity', 1)
+	          .style('fill-opacity', .75);
 
 		 
       var bars = groups.selectAll('rect.nv-bar')
@@ -193,16 +195,16 @@ nv.models.tdMultiBar = function() {
 
 		  bars.exit().remove();
 		 
-      /*var bars = [];
-		for(var i in data) {
-			if(data[i].type == "bar") {
-				nv.log(data[i].values);
-				bars.push(data[i].values);
+		/*var bars = [];
+			for(var i in data) {
+				if(data[i].type == "bar") {
+					nv.log(data[i].values);
+					bars.push(data[i].values);
+				}
 			}
-		}
-		bars = groupsBars.selectAll('rect.nv-bar').data(bars);
-		bars.exit().remove();
-*/
+			bars = groupsBars.selectAll('rect.nv-bar').data(bars);
+			bars.exit().remove();
+		*/
       
       var lines = [];
 		for(var i in data) {
@@ -290,18 +292,31 @@ nv.models.tdMultiBar = function() {
           .style('stroke', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); });
       }
       
-      //This is the accessor function we talked about above
-	  var offsetLine = bars.attr('width') / 2;
+      
+      var test = "defined";
+      if(offsetLine !== test){
+      	 nv.log("enter");
+      	 nv.log(offsetLine);
+		 var offsetLine = bars.attr('width') / 2;
+		 nv.log(offsetLine);
+		 test = "undefined";
+	  }
+	
 	  var lineFunction = d3.svg.line()
-  	    .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d)) + offsetLine) })
-  		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
-        .interpolate("linear");
+		.x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
+		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
+		.interpolate("linear")
+		.defined(defined);
+
         
       var linesEnter = lines.enter()
-      .append('path')
-          .attr('d', function(d,i) { return lineFunction(d.values) })
+      .append("path")
+          .attr("d", function(d,i) { return lineFunction(d.values) })
           .attr("stroke", "yellow")
 		  .attr("stroke-width", 2)
+		  .attr("transform", "translate("+offsetLine+",0)")
+		  .attr("text-anchor", "middle")
+		  .attr("offset", 20)
           .attr("fill", "none")
           //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
 		  .on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
@@ -339,6 +354,7 @@ nv.models.tdMultiBar = function() {
 	        });
 	        d3.event.stopPropagation();
 	      })
+	      
 
 
 
@@ -360,8 +376,7 @@ nv.models.tdMultiBar = function() {
                   return stacked ? 0 : (d.series * x.rangeBand() / data.length )
             })
             .attr('width', x.rangeBand() / (stacked ? 1 : data.length) );
-			
-			var offsetLine = bars.attr('width') / 2;
+		
 	  }
       else{
           bars.transition()
@@ -382,8 +397,9 @@ nv.models.tdMultiBar = function() {
             .attr('height', function(d,i) {
                 return Math.max(Math.abs(y(getY(d,i)) - y(0)),1) || 0;
             });
+            
+           linesEnter.attr("transform", "translate(0,0)")
 			
-//			d3.selectAll('path').remove();
 		}
 
       //store old scales for use in transitions on update
@@ -576,4 +592,5 @@ nv.models.tdMultiBar = function() {
 
 
   return chart;
+  
 }
