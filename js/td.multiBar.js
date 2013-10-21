@@ -576,4 +576,4 @@ nv.models.tdMultiBar = function() {
 
 
   return chart;
-}
+};
