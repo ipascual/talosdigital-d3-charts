@@ -130,14 +130,14 @@
 		      .hideable(false).stacked(true);
 		
 		    chart.reduceXTicks(false).staggerLabels(true);
-		
+	
 		    chart.xAxis
 		        .axisLabel("Current Index")
 		        .showMaxMin(true)
 		        .tickFormat(d3.format('f'));
 		
 		    chart.yAxis
-		        .tickFormat(d3.format(',f'));
+		        .tickFormat(d3.format(',g'));
 		
 		    d3.select('#chart svg#main')
 		       .datum(data)

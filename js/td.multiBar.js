@@ -61,13 +61,13 @@ nv.models.tdMultiBar = function() {
         };}
       )}];
 
-      if (stacked)
+     /*if (stacked)
         data = d3.layout.stack()
                  .offset(stackOffset)
                  .values(function(d){ return d.values })
                  .y(getY)
                  (!data.length && hideable ? hideable : data);
-
+	*/
       //add series index to each data point for reference
       data = data.map(function(series, i) {
         series.values = series.values.map(function(point) {
@@ -100,23 +100,59 @@ nv.models.tdMultiBar = function() {
       // Setup Scales
 
     // remap and flatten the data for use in calculating the scales' domains
-
-    var barsData = data.filter(function(d) { return (d.type == "bar") ? d : null});
-	var barsData = d3.layout.stack()
-	         .offset(stackOffset)
-	         .values(function(d){ return d.values })
-	         .y(getY)
-	         (!barsData.length && hideable ? hideable : barsData);
-
-    var linesData = data.filter(function(d) { return (d.type == "line") ? d : null});
-
-	console.log(linesData);
-	return;
-
-	//xDomain = [0, 50000];
-	yDomain = [0,3000000];
-
+	 if (stacked){
+	    var barsData = data.filter(function(d) { return (d.type == "bar") ? d : null});
+		var barsData = d3.layout.stack()
+		         .offset(stackOffset)
+		         .values(function(d){ return d.values })
+		         .y(getY)
+		         (!barsData.length && hideable ? hideable : barsData);
 	
+	    var linesData = data.filter(function(d) { return (d.type == "line") ? d : null});
+	
+		//calculate bars data
+		var maxBarValues = barsData.map(function(d) {
+			return d.values.map(function(d,i) {
+				return getY(d,i)
+			})
+		});
+		
+		var subtotalBars = [];
+		
+		for(var i in maxBarValues){
+			subtotalBars.push(d3.max(maxBarValues[i]));
+		}
+		
+		var totalBars = 0;
+		
+		for(var i=0, len = subtotalBars.length; i<  len; i++){
+		    totalBars += subtotalBars[i];  //Iterate over your first array and then grab the second element add the values up
+		}
+		
+		//calculate lines data
+		var maxLineValues = linesData.map(function(d) {
+			return d.values.map(function(d,i) {
+				return getY(d,i)
+			})
+		});
+		
+		var subtotalLines = [];
+		
+		for(var i in maxLineValues){
+			subtotalLines.push(d3.max(maxLineValues[i]));
+		}
+
+		var totalLines = subtotalLines;
+		
+		var totalToDomain = [];
+			totalToDomain.push(totalBars)
+			totalToDomain.push(d3.max(totalLines));
+			
+		var yDomainMax = d3.max(totalToDomain);
+		//xDomain = [0, 50000];
+		yDomain = [0, yDomainMax];
+
+	}
       var seriesData = (xDomain && yDomain) ? [] : // if we know xDomain and yDomain, no need to calculate
             data.map(function(d) {
               return d.values.map(function(d,i) {
@@ -230,7 +266,7 @@ nv.models.tdMultiBar = function() {
 		}
 		lines = groups.selectAll('path.nv-line').data(lines);
 		lines.exit().remove();
-
+	  
 	  
       //barChart
       var barsEnter = bars.enter()
@@ -300,8 +336,6 @@ nv.models.tdMultiBar = function() {
           .transition()
           .attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
           
-          
-
       if (barColor) {
         if (!disabled) disabled = data.map(function() { return true });
         bars
@@ -309,16 +343,7 @@ nv.models.tdMultiBar = function() {
           .style('stroke', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); });
       }
       
-      
-      var test = "defined";
-      if(offsetLine !== test){
-      	 nv.log("enter");
-      	 nv.log(offsetLine);
-		 var offsetLine = bars.attr('width') / 2;
-		 nv.log(offsetLine);
-		 test = "undefined";
-	  }
-	
+	  var offsetLine = bars.attr('width') / 2;
 	  var lineFunction = d3.svg.line()
 		.x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
 		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
@@ -394,7 +419,8 @@ nv.models.tdMultiBar = function() {
                   return stacked ? 0 : (d.series * x.rangeBand() / data.length )
             })
             .attr('width', x.rangeBand() / (stacked ? 1 : data.length) );
-		
+            
+          
 	  }
       else{
           bars.transition()
@@ -416,16 +442,37 @@ nv.models.tdMultiBar = function() {
                 return Math.max(Math.abs(y(getY(d,i)) - y(0)),1) || 0;
             });
             
-           linesEnter.attr("transform", "translate(0,0)")
-			
+            
 		}
 
       //store old scales for use in transitions on update
       x0 = x.copy();
       y0 = y.copy();
 
+
+//working on...
+		if(stacked){
+			d3.selectAll('path').transition()
+			.delay(function(d,i) { 
+				d.type = "line";
+			    return chart;
+			});
+			return chart;
+		}else{
+			nv.log('grouped');
+				lines.transition()
+				.delay(function(d,i) { 
+					d.type = "bar";
+				    return chart;
+				});
+		}
+
+
+	  
+
     });
 
+	
     return chart;
   }
 
