@@ -43,7 +43,7 @@ nv.models.tdMultiBar = function() {
   x0 = x0 || x;
   y0 = y0 || y;
   //============================================================
-
+	var Tooltip = 0;
 
   function chart(selection) {
     selection.each(function(data) {
@@ -232,6 +232,7 @@ nv.models.tdMultiBar = function() {
           .style('fill', function(d,i,j){ return color(d, j, i);  })
           .style('stroke', function(d,i,j){ return color(d, j, i); })
           .on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
+          	Tooltip = i;
             d3.select(this).classed('hover', true);
             dispatch.elementMouseover({
               value: getY(d,i),
@@ -321,6 +322,7 @@ nv.models.tdMultiBar = function() {
           //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
 		  .on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
             d3.select(this).classed('hover', true);
+            d = d.values[Tooltip];
             dispatch.elementMouseover({
               value: getY(d,i),
               point: d,
@@ -353,7 +355,7 @@ nv.models.tdMultiBar = function() {
 	          e: d3.event
 	        });
 	        d3.event.stopPropagation();
-	      })
+	     });
 	      
 
 
