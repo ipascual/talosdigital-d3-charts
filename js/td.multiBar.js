@@ -68,7 +68,6 @@ nv.models.tdMultiBar = function() {
                  .y(getY)
                  (!data.length && hideable ? hideable : data);
 
-
       //add series index to each data point for reference
       data = data.map(function(series, i) {
         series.values = series.values.map(function(point) {
@@ -77,7 +76,6 @@ nv.models.tdMultiBar = function() {
         });
         return series;
       });
-
 
       //------------------------------------------------------------
       // HACK for negative value stacking
@@ -101,7 +99,24 @@ nv.models.tdMultiBar = function() {
       //------------------------------------------------------------
       // Setup Scales
 
-      // remap and flatten the data for use in calculating the scales' domains
+    // remap and flatten the data for use in calculating the scales' domains
+
+    var barsData = data.filter(function(d) { return (d.type == "bar") ? d : null});
+	var barsData = d3.layout.stack()
+	         .offset(stackOffset)
+	         .values(function(d){ return d.values })
+	         .y(getY)
+	         (!barsData.length && hideable ? hideable : barsData);
+
+    var linesData = data.filter(function(d) { return (d.type == "line") ? d : null});
+
+	console.log(linesData);
+	return;
+
+	//xDomain = [0, 50000];
+	yDomain = [0,3000000];
+
+	
       var seriesData = (xDomain && yDomain) ? [] : // if we know xDomain and yDomain, no need to calculate
             data.map(function(d) {
               return d.values.map(function(d,i) {
@@ -109,6 +124,7 @@ nv.models.tdMultiBar = function() {
               })
             });
 
+		
       x   .domain(xDomain || d3.merge(seriesData).map(function(d) { return d.x }))
           .rangeBands(xRange || [0, availableWidth], groupSpacing);
 		  
