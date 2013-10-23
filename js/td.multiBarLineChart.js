@@ -55,6 +55,7 @@ nv.models.tdMultiBarLineChart = function() {
     ;
 
   controls.updateState(false);
+  var topNew = 0;
   //============================================================
 
 
@@ -63,6 +64,12 @@ nv.models.tdMultiBarLineChart = function() {
   //------------------------------------------------------------
 
   var showTooltip = function(e, offsetElement) {
+      if(isNaN(e.pos[1])){
+          e.pos[1] = topNew;
+          console.log(e);
+      }else{
+          topNew = e.pos[1];
+      }
     var left = e.pos[0] + ( offsetElement.offsetLeft || 0 ),
         top = e.pos[1] + ( offsetElement.offsetTop || 0),
         x = xAxis.tickFormat()(multibar.x()(e.point, e.pointIndex)),
