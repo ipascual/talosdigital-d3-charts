@@ -399,8 +399,6 @@ nv.models.tdMultiBar = function() {
 	     });
 	      
 
-
-
       if (stacked){
 
           bars.transition()
