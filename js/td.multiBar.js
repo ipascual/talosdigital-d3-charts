@@ -45,9 +45,14 @@ nv.models.tdMultiBar = function() {
   y0 = y0 || y;
   //============================================================
 	var Tooltip = 0;
-	
+
+
   function chart(selection) {
+  	
     selection.each(function(data) {
+    	if(data.length == 0){
+			reloadchart();
+		}
       var availableWidth = width - margin.left - margin.right,
           availableHeight = height - margin.top - margin.bottom,
           container = d3.select(this);
@@ -81,7 +86,7 @@ nv.models.tdMultiBar = function() {
 
       //------------------------------------------------------------
       // HACK for negative value stacking
-      if (stacked)
+      if (stacked && data.length > 0)
         data[0].values.map(function(d,i) {
           var posBase = 0, negBase = 0;
           data.map(function(d) {
