@@ -353,7 +353,15 @@ nv.models.tdMultiBar = function() {
       }
       
 	      if(stacked && barsData.length > 0){
-		  	var offsetLine = bars.attr('width') / 2;
+	          var offsetLine;
+	          if(spacebar == 0){
+	              spacebar = bars.attr('width') / 2;
+	              offsetLine = spacebar;
+	          }
+	          else{
+	              offsetLine = spacebar;
+	          }
+		  	//var offsetLine = bars.attr('width') / 2;
 		  }
 	  var lineFunction = d3.svg.line()
 		.x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
