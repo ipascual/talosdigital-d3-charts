@@ -330,6 +330,7 @@ nv.models.tdMultiBarLineChart = function() {
     		.delay(function(d,i) { 
     			d.type = "bar";
     		});
+    		d3.selectAll("rect.nv-bar").attr("test", "grouped");
     		chart.update();
             break;
           case 'Stacked':
