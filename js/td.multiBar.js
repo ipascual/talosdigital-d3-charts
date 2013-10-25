@@ -28,10 +28,11 @@ nv.models.tdMultiBar = function() {
     , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout')
     , interpolate = "linear" // controls the line interpolation
     , defined = function(d,i) { return !isNaN(getY(d)) && getY(d) !== null } // allows a line to be not continuous when it is not defined
+    , transitionDuration = 250
     ;
 
   //============================================================          
-
+  
   //============================================================
   // Private Variables
   //------------------------------------------------------------
@@ -44,7 +45,7 @@ nv.models.tdMultiBar = function() {
   y0 = y0 || y;
   //============================================================
 	var Tooltip = 0;
-
+	
   function chart(selection) {
     selection.each(function(data) {
       var availableWidth = width - margin.left - margin.right,
@@ -60,6 +61,7 @@ nv.models.tdMultiBar = function() {
           size: 0.01
         };}
       )}];
+      
 
      /*if (stacked)
         data = d3.layout.stack()
@@ -447,26 +449,15 @@ nv.models.tdMultiBar = function() {
       x0 = x.copy();
       y0 = y.copy();
 
-
-//working on...
-		if(stacked){
-			d3.selectAll('path').transition()
-			.delay(function(d,i) { 
-				d.type = "line";
-			    return chart;
-			});
-			return chart;
-		}else{
-			nv.log('grouped');
-				lines.transition()
-				.delay(function(d,i) { 
-					d.type = "bar";
-				    return chart;
-				});
-		}
-
-
 	  
+	//work in progress
+	if(stacked){
+		d3.selectAll('path').transition()
+		.delay(function(d,i) { 
+			d.type = "bar";
+			
+		});
+	}
 
     });
 

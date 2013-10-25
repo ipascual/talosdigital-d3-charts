@@ -92,7 +92,7 @@ nv.models.tdMultiBarLineChart = function() {
           availableHeight = (height || parseInt(container.style('height')) || 400)
                              - margin.top - margin.bottom;
 
-      chart.update = function() { d3.selectAll('path').remove(); container.transition().duration(transitionDuration).call(chart); };
+      chart.update = function() { container.transition().duration(transitionDuration).call(chart); };
       chart.container = this;
 
       //set state.disabled
@@ -329,6 +329,8 @@ nv.models.tdMultiBarLineChart = function() {
             break;
           case 'Stacked':
             multibar.stacked(true);
+            //work in progress
+			var svg = d3.select("svg");
             break;
         }
 
