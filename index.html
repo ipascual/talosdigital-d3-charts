@@ -55,6 +55,7 @@
   		</div>
   	</div>
 	<script type="text/javascript">
+	window.spacebar = 0;
 	window.reloadchart = function(){
 	    var data = [
 		  {
@@ -147,7 +148,7 @@
 		    nv.utils.windowResize(chart.update);
 		
 		    chart.dispatch.on('stateChange', function(e) { 
-				d3.selectAll('path').remove();
+		            d3.selectAll('path').remove();
 		    });
 		
 		    return chart;

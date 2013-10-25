@@ -352,10 +352,19 @@ nv.models.tdMultiBar = function() {
           .style('stroke', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); });
       }
 
-      if(stacked && barsData.length > 0){
-	      nv.log(d3.select("rect.nv-bar").attr('width'));
-		  var offsetLine = d3.select("rect.nv-bar").attr('width') / 2;
-	  }
+      
+	      if(stacked && barsData.length > 0){
+	          var offsetLine;
+	          if(spacebar == 0){
+	              spacebar = bars.attr('width') / 2;
+	              offsetLine = spacebar;
+	          }
+	          else{
+	              offsetLine = spacebar;
+	          }
+		  	//var offsetLine = bars.attr('width') / 2;
+		  }
+		  
 	  var lineFunction = d3.svg.line()
 		.x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
 		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
