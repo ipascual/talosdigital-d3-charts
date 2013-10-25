@@ -10,6 +10,7 @@ nv.models.tdMultiBarLineChart = function() {
     , yAxis = nv.models.axis()
     , legend = nv.models.legend()
     , controls = nv.models.legend()
+    , interactiveLayer = nv.interactiveGuideline()
     ;
 
   var margin = {top: 30, right: 20, bottom: 50, left: 60}
@@ -21,6 +22,7 @@ nv.models.tdMultiBarLineChart = function() {
     , showXAxis = true
     , showYAxis = true
     , rightAlignYAxis = false
+    , useInteractiveGuideline = false
     , reduceXTicks = true // if false a tick will show for every data point
     , staggerLabels = false
     , rotateLabels = 0
@@ -72,10 +74,10 @@ nv.models.tdMultiBarLineChart = function() {
     var left = e.pos[0] + ( offsetElement.offsetLeft || 0 ),
         top = e.pos[1] + ( offsetElement.offsetTop || 0),
         x = xAxis.tickFormat()(multibar.x()(e.point, e.pointIndex)),
-        y = (e.series.bar ? y1Axis : y2Axis).tickFormat()(lines.y()(e.point, e.pointIndex)),
+        y = yAxis.tickFormat()(multibar.y()(e.point, e.pointIndex)),
         content = tooltip(e.series.key, x, y, e, chart);
 
-    nv.tooltip.show([left, top], content, e.value < 0 ? 'n' : 's', null, offsetElement);
+		nv.tooltip.show([left, top], content, e.value < 0 ? 'n' : 's', null, offsetElement);
   };
 
   //============================================================
@@ -346,6 +348,66 @@ nv.models.tdMultiBarLineChart = function() {
         chart.update();
       });
 
+	  
+	  
+	  
+	  interactiveLayer.dispatch.on('elementMousemove', function(e) {
+          lines.clearHighlights();
+          var singlePoint, pointIndex, pointXLocation, allData = [];
+          data
+          .filter(function(series, i) { 
+            series.seriesIndex = i;
+            return !series.disabled; 
+          })
+          .forEach(function(series,i) {
+              pointIndex = nv.interactiveBisect(series.values, e.pointXValue, chart.x());
+              lines.highlightPoint(i, pointIndex, true);
+              var point = series.values[pointIndex];
+              if (typeof point === 'undefined') return;
+              if (typeof singlePoint === 'undefined') singlePoint = point;
+              if (typeof pointXLocation === 'undefined') pointXLocation = chart.xScale()(chart.x()(point,pointIndex));
+              allData.push({
+                  key: series.key,
+                  value: chart.y()(point, pointIndex),
+                  color: color(series,series.seriesIndex)
+              });
+          });
+          //Highlight the tooltip entry based on which point the mouse is closest to.
+          if (allData.length > 2) {
+            var yValue = chart.yScale().invert(e.mouseY);
+            var domainExtent = Math.abs(chart.yScale().domain()[0] - chart.yScale().domain()[1]);
+            var threshold = 0.03 * domainExtent;
+            var indexToHighlight = nv.nearestValueIndex(allData.map(function(d){return d.value}),yValue,threshold);
+            if (indexToHighlight !== null)
+              allData[indexToHighlight].highlight = true;
+          }
+
+          var xValue = xAxis.tickFormat()(chart.x()(singlePoint,pointIndex));
+          interactiveLayer.tooltip
+                  .position({left: pointXLocation + margin.left, top: e.mouseY + margin.top})
+                  .chartContainer(that.parentNode)
+                  .enabled(tooltips)
+                  .valueFormatter(function(d,i) {
+                     return yAxis.tickFormat()(d);
+                  })
+                  .data(
+                      {
+                        value: xValue,
+                        series: allData
+                      }
+                  )();
+
+          interactiveLayer.renderGuideLine(pointXLocation);
+
+      });
+
+      interactiveLayer.dispatch.on("elementMouseout",function(e) {
+          dispatch.tooltipHide();
+          lines.clearHighlights();
+      });
+	  
+	  
+
       dispatch.on('tooltipShow', function(e) {
         if (tooltips) showTooltip(e, that.parentNode);
       });
@@ -407,6 +469,7 @@ nv.models.tdMultiBarLineChart = function() {
   chart.legend = legend;
   chart.xAxis = xAxis;
   chart.yAxis = yAxis;
+  chart.interactiveLayer = interactiveLayer;
 
   d3.rebind(chart, multibar, 'x', 'y', 'xDomain', 'yDomain', 'xRange', 'yRange', 'forceX', 'forceY', 'clipEdge',
    'id', 'stacked', 'stackOffset', 'delay', 'barColor','groupSpacing');
