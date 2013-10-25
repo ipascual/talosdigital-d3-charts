@@ -450,14 +450,6 @@ nv.models.tdMultiBar = function() {
       y0 = y.copy();
 
 	  
-	//work in progress
-	if(stacked){
-		d3.selectAll('path').transition()
-		.delay(function(d,i) { 
-			d.type = "bar";
-			
-		});
-	}
 
     });
 

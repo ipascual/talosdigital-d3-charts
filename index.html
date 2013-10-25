@@ -55,7 +55,8 @@
   		</div>
   	</div>
 	<script type="text/javascript">
-	var data = [
+	window.reloadchart = function(){
+	    var data = [
 		  {
 		    key: "Base Rental",
 		    color: "#00B2C0",
@@ -152,6 +153,8 @@
 		    return chart;
 		});
 		
+	}
+	reloadchart();
 		
 
 	</script>

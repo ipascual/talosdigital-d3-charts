@@ -326,11 +326,16 @@ nv.models.tdMultiBarLineChart = function() {
         switch (d.key) {
           case 'Grouped':
             multibar.stacked(false);
+            d3.selectAll('path').transition()
+    		.delay(function(d,i) { 
+    			d.type = "bar";
+    		});
+    		chart.update();
             break;
           case 'Stacked':
             multibar.stacked(true);
             //work in progress
-			var svg = d3.select("svg");
+			reloadchart();
             break;
         }
 
