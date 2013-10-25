@@ -154,6 +154,7 @@ nv.models.tdMultiBarLineChart = function() {
       gEnter.append('g').attr('class', 'nv-barsWrap');
       gEnter.append('g').attr('class', 'nv-legendWrap');
       gEnter.append('g').attr('class', 'nv-controlsWrap');
+      gEnter.append('g').attr('class', 'nv-interactive');
 
       //------------------------------------------------------------
 
@@ -210,6 +211,17 @@ nv.models.tdMultiBarLineChart = function() {
       if (rightAlignYAxis) {
           g.select(".nv-y.nv-axis")
               .attr("transform", "translate(" + availableWidth + ",0)");
+      }
+      
+      //Set up interactive layer
+      if (useInteractiveGuideline) {
+        interactiveLayer
+           .width(availableWidth)
+           .height(availableHeight)
+           .margin({left:margin.left, top:margin.top})
+           .svgContainer(container)
+           .xScale(x);
+        wrap.select(".nv-interactive").call(interactiveLayer);
       }
 
       //------------------------------------------------------------
@@ -550,6 +562,16 @@ nv.models.tdMultiBarLineChart = function() {
   chart.staggerLabels = function(_) {
     if (!arguments.length) return staggerLabels;
     staggerLabels = _;
+    return chart;
+  };
+  
+  chart.useInteractiveGuideline = function(_) {
+    if(!arguments.length) return useInteractiveGuideline;
+    useInteractiveGuideline = _;
+    if (_ === true) {
+       chart.interactive(false);
+       chart.useVoronoi(false);
+    }
     return chart;
   };
 

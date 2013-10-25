@@ -376,7 +376,7 @@ nv.models.tdMultiBar = function() {
       .append("path")
           .attr("d", function(d,i) { return lineFunction(d.values) })
           .attr("stroke", "yellow")
-		  .attr("stroke-width", 2)
+		  .attr("stroke-width", 4)
 		  .attr("transform", "translate("+offsetLine+",0)")
 		  .attr("text-anchor", "middle")
 		  .attr("offset", 20)
