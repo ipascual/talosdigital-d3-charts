@@ -104,12 +104,14 @@ nv.models.tdMultiBar = function() {
     // remap and flatten the data for use in calculating the scales' domains
 	 if (stacked){
 	    var barsData = data.filter(function(d) { return (d.type == "bar") ? d : null});
-		var barsData = d3.layout.stack()
-		         .offset(stackOffset)
-		         .values(function(d){ return d.values })
-		         .y(getY)
-		         (!barsData.length && hideable ? hideable : barsData);
-	
+	    
+	    if(typeof barsData !== 'undefined' && barsData.length > 0){
+			var barsData = d3.layout.stack()
+			         .offset(stackOffset)
+			         .values(function(d){ return d.values })
+			         .y(getY)
+			         (!barsData.length && hideable ? hideable : barsData);
+		}
 	    var linesData = data.filter(function(d) { return (d.type == "line") ? d : null});
 	
 		//calculate bars data
@@ -345,7 +347,9 @@ nv.models.tdMultiBar = function() {
           .style('stroke', function(d,i,j) { return d3.rgb(barColor(d,i)).darker(  disabled.map(function(d,i) { return i }).filter(function(d,i){ return !disabled[i]  })[j]   ).toString(); });
       }
       
-	  var offsetLine = bars.attr('width') / 2;
+	      if(stacked && barsData.length > 0){
+		  	var offsetLine = bars.attr('width') / 2;
+		  }
 	  var lineFunction = d3.svg.line()
 		.x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
 		.y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d))) })
