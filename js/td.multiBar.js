@@ -107,7 +107,7 @@ nv.models.tdMultiBar = function() {
       // Setup Scales
 
     // remap and flatten the data for use in calculating the scales' domains
-	 if (stacked){
+	 //if (stacked){
 	    var barsData = data.filter(function(d) { return (d.type == "bar") ? d : null});
 	    
 	    if(typeof barsData !== 'undefined' && barsData.length > 0){
@@ -156,12 +156,16 @@ nv.models.tdMultiBar = function() {
 		var totalToDomain = [];
 			totalToDomain.push(totalBars)
 			totalToDomain.push(d3.max(totalLines));
-			
-		var yDomainMax = d3.max(totalToDomain);
+		
+		if(!stacked){
+			var yDomainMax = d3.max(subtotalBars);
+		}else{
+			var yDomainMax = d3.max(totalToDomain);
+		}
 		//xDomain = [0, 50000];
 		yDomain = [0, yDomainMax];
 
-	}
+	//}
       var seriesData = (xDomain && yDomain) ? [] : // if we know xDomain and yDomain, no need to calculate
             data.map(function(d) {
               return d.values.map(function(d,i) {
@@ -175,7 +179,7 @@ nv.models.tdMultiBar = function() {
 		  
 		    //y   .domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) { return d.y + (stacked ? d.y1 : 0) }).concat(forceY)))
       y   .domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) { return stacked ? (d.y > 0 ? d.y1 : d.y1 + d.y ) : d.y }).concat(forceY)))
-          .range(yRange || [availableHeight, 0]);
+          .range(yRange || [availableHeight, 0]).nice();
 	if(stacked){
 		y0 = y;
 	}
