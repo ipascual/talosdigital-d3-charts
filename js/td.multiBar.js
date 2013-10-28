@@ -36,7 +36,6 @@ nv.models.tdMultiBar = function() {
   //============================================================
   // Private Variables
   //------------------------------------------------------------
-
   var x0, 
   	y0 //used to store previous scales
     ;
