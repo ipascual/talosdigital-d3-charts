@@ -378,7 +378,7 @@ nv.models.tdMultiBar = function() {
       var linesEnter = lines.enter()
       .append("path")
           .attr("d", function(d,i) { return lineFunction(d.values) })
-          .attr("stroke", "yellow")
+          .attr("stroke", function(d,i,j){ return color(d, j, i);  })
 		  .attr("stroke-width", 4)
 		  .attr("transform", "translate("+offsetLine+",0)")
 		  .attr("text-anchor", "middle")
@@ -422,7 +422,16 @@ nv.models.tdMultiBar = function() {
 	        d3.event.stopPropagation();
 	     });
 	      
-
+		 if(linesEnter[0].length > 0){
+			 var totalLength = linesEnter.node().getTotalLength();
+			 linesEnter
+			  .attr("stroke-dasharray", totalLength + " " + totalLength)
+			  .attr("stroke-dashoffset", totalLength)
+			  .transition()
+			    .duration(1000)
+			    .ease("linear")
+			    .attr("stroke-dashoffset", 0);
+		 }
       if (stacked){
 
           bars.transition()

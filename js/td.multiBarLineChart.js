@@ -29,7 +29,7 @@ nv.models.tdMultiBarLineChart = function() {
     , tooltips = true
     , tooltip = function(key, x, y, e, graph) {
         return '<h3>' + key + '</h3>' +
-               '<p>' +  y + ' on ' + x + '</p>';
+               '<p>' +  parseInt(y) + ' on ' + x + '</p>';
       }
     , x //can be accessed via chart.xScale()
     , y //can be accessed via chart.yScale()
@@ -93,7 +93,7 @@ nv.models.tdMultiBarLineChart = function() {
           availableHeight = (height || parseInt(container.style('height')) || 400)
                              - margin.top - margin.bottom;
 
-      chart.update = function() { container.transition().duration(transitionDuration).call(chart); };
+      chart.update = function() { d3.selectAll('path').remove(); container.transition().duration(transitionDuration).call(chart); };
       chart.container = this;
 
       //set state.disabled
