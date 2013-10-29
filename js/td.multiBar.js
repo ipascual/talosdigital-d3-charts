@@ -379,48 +379,11 @@ nv.models.tdMultiBar = function() {
       .append("path")
           .attr("d", function(d,i) { return lineFunction(d.values) })
           .attr("stroke", function(d,i,j){ return color(d, j, i);  })
-		  .attr("stroke-width", 4)
+		  .attr("stroke-width", 2)
 		  .attr("transform", "translate("+offsetLine+",0)")
 		  .attr("text-anchor", "middle")
 		  .attr("offset", 20)
-          .attr("fill", "none")
-          //.attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
-		  .on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
-            d3.select(this).classed('hover', true);
-            d = d.values[Tooltip];
-            dispatch.elementMouseover({
-              value: getY(d,i),
-              point: d,
-              series: data[d.series],
-              pos: [x(getX(d,i)) + (x.rangeBand() * (stacked ? data.length / 2 : d.series + .5) / data.length), y(getY(d,i) + (stacked ? d.y0 : 0))],  // TODO: Figure out why the value appears to be shifted
-              pointIndex: i,
-              seriesIndex: d.series,
-              e: d3.event
-            });
-          })
-          .on('mouseout', function(d,i) {
-            d3.select(this).classed('hover', false);
-            dispatch.elementMouseout({
-              value: getY(d,i),
-              point: d,
-              series: data[d.series],
-              pointIndex: i,
-              seriesIndex: d.series,
-              e: d3.event
-            });
-          })
-		  .on('click', function(d,i) {
-	        dispatch.elementClick({
-	          value: getY(d,i),
-	          point: d,
-	          series: data[d.series],
-	          pos: [x(getX(d,i)) + (x.rangeBand() * (stacked ? data.length / 2 : d.series + .5) / data.length), y(getY(d,i) + (stacked ? d.y0 : 0))],  // TODO: Figure out why the value appears to be shifted
-	          pointIndex: i,
-	          seriesIndex: d.series,
-	          e: d3.event
-	        });
-	        d3.event.stopPropagation();
-	     });
+          .attr("fill", "none");
 	      
 		 if(linesEnter[0].length > 0){
 			 var totalLength = linesEnter.node().getTotalLength();
@@ -428,10 +391,71 @@ nv.models.tdMultiBar = function() {
 			  .attr("stroke-dasharray", totalLength + " " + totalLength)
 			  .attr("stroke-dashoffset", totalLength)
 			  .transition()
-			    .duration(1000)
+			    .duration(1500)
 			    .ease("linear")
 			    .attr("stroke-dashoffset", 0);
 		 }
+		 
+		 var circles = [];
+    		for(var i in data) {
+    			if(data[i].type == "line") {
+    				circles.push(data[i]);
+    			}
+    		}
+			
+		try{
+			var circle = groups.selectAll("circle.nv-circle").data(circles[0].values);
+
+		var newcircle = circle.enter()
+              .append("circle")
+                .attr("r", 2)
+        		.attr("cx", function(d) { return nv.utils.NaNtoZero(x(getX(d))); })
+        		.attr("cy", function(d) { return nv.utils.NaNtoZero(y(getY(d))); })
+        		.attr("transform", "translate("+offsetLine+",0)")
+        		.attr("class", "tooltips")
+        		.style("fill", "yellow")
+        		.style("stroke", "yellow")
+        		.style("stroke-width", "4px")
+        		.on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
+                    d3.select(this).classed('hover', true);
+                    dispatch.elementMouseover({
+                      value: getY(d,i),
+                      point: d,
+                      series: data[d.series],
+                      pos: [x(getX(d,i)) + (x.rangeBand() * (stacked ? data.length / 2 : d.series + .5) / data.length), y(getY(d,i) + (stacked ? d.y0 : 0))],  // TODO: Figure out why the value appears to be shifted
+                      pointIndex: i,
+                      seriesIndex: d.series,
+                      e: d3.event
+                    });
+                  })
+                .on('mouseout', function(d,i) {
+                    d3.select(this).classed('hover', false);
+                    dispatch.elementMouseout({
+                      value: getY(d,i),
+                      point: d,
+                      series: data[d.series],
+                      pointIndex: i,
+                      seriesIndex: d.series,
+                      e: d3.event
+                    });
+                  })
+                .on('click', function(d,i) {
+        	        dispatch.elementClick({
+        	          value: getY(d,i),
+        	          point: d,
+        	          series: data[d.series],
+        	          pos: [x(getX(d,i)) + (x.rangeBand() * (stacked ? data.length / 2 : d.series + .5) / data.length), y(getY(d,i) + (stacked ? d.y0 : 0))],  // TODO: Figure out why the value appears to be shifted
+        	          pointIndex: i,
+        	          seriesIndex: d.series,
+        	          e: d3.event
+        	        });
+        	        d3.event.stopPropagation();
+        	     });
+		}
+		catch(e){
+		}
+		
+		 
       if (stacked){
 
           bars.transition()

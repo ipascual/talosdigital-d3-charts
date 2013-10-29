@@ -93,7 +93,7 @@ nv.models.tdMultiBarLineChart = function() {
           availableHeight = (height || parseInt(container.style('height')) || 400)
                              - margin.top - margin.bottom;
 
-      chart.update = function() { d3.selectAll('path').remove(); container.transition().duration(transitionDuration).call(chart); };
+      chart.update = function() { d3.selectAll('path').remove();d3.selectAll('.nv-barsWrap circle').remove(); container.transition().duration(transitionDuration).call(chart); };
       chart.container = this;
 
       //set state.disabled
