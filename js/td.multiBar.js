@@ -356,17 +356,6 @@ nv.models.tdMultiBar = function() {
       }
 
       
-	      if(stacked && barsData.length > 0){
-	          var offsetLine;
-	          if(spacebar == 0){
-	              spacebar = bars.attr('width') / 2;
-	              offsetLine = spacebar;
-	          }
-	          else{
-	              offsetLine = spacebar;
-	          }
-		  	//var offsetLine = bars.attr('width') / 2;
-		  }
 		  
 	  var lineFunction = d3.svg.line()
 		.x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d))) })
@@ -380,7 +369,7 @@ nv.models.tdMultiBar = function() {
           .attr("d", function(d,i) { return lineFunction(d.values) })
           .attr("stroke", function(d,i,j){ return color(d, j, i);  })
 		  .attr("stroke-width", 2)
-		  .attr("transform", "translate("+offsetLine+",0)")
+		  .attr("transform", "translate("+bars.attr('width') / 2+",0)")
 		  .attr("text-anchor", "middle")
 		  .attr("offset", 20)
           .attr("fill", "none");
@@ -411,7 +400,7 @@ nv.models.tdMultiBar = function() {
         		.attr("cx", function(d) { return nv.utils.NaNtoZero(x(getX(d))); })
         		.attr("cy", function(d) { return nv.utils.NaNtoZero(y(getY(d))); })
         		
-        		.attr("transform", "translate("+offsetLine+",0)")
+        		.attr("transform", "translate("+bars.attr('width') / 2+",0)")
         		.attr("class", "tooltips")
         		.style("fill", "yellow")
         		.style("stroke", "yellow")
