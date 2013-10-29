@@ -396,14 +396,13 @@ nv.models.tdMultiBar = function() {
 			    .attr("stroke-dashoffset", 0);
 		 }
 		 
-		 var circles = [];
+		try{
+			 var circles = [];
     		for(var i in data) {
     			if(data[i].type == "line") {
     				circles.push(data[i]);
     			}
     		}
-			
-		try{
 			var circle = groups.selectAll("circle.nv-circle").data(circles[0].values);
 
 		var newcircle = circle.enter()
@@ -411,6 +410,7 @@ nv.models.tdMultiBar = function() {
                 .attr("r", 2)
         		.attr("cx", function(d) { return nv.utils.NaNtoZero(x(getX(d))); })
         		.attr("cy", function(d) { return nv.utils.NaNtoZero(y(getY(d))); })
+        		
         		.attr("transform", "translate("+offsetLine+",0)")
         		.attr("class", "tooltips")
         		.style("fill", "yellow")
