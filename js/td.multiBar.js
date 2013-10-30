@@ -346,7 +346,19 @@ nv.models.tdMultiBar = function() {
       bars
           .attr('class', function(d,i) { return getY(d,i) < 0 ? 'nv-bar negative' : 'nv-bar positive'})
           .transition()
-          .attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; })
+          .attr('transform', function(d,i) { return 'translate(' + x(getX(d,i)) + ',0)'; });
+          
+          if(stacked && barsData.length > 0){
+                  var offsetLine;
+                  if(spacebar == 0){
+                      spacebar = bars.attr('width') / 2;
+                      offsetLine = spacebar;
+                  }
+                  else{
+                      offsetLine = spacebar;
+                  }
+                          //var offsetLine = bars.attr('width') / 2;
+                  }
           
       if (barColor) {
         if (!disabled) disabled = data.map(function() { return true });
@@ -366,10 +378,11 @@ nv.models.tdMultiBar = function() {
         
       var linesEnter = lines.enter()
       .append("path")
+      .attr("class" , "newline")
           .attr("d", function(d,i) { return lineFunction(d.values) })
           .attr("stroke", function(d,i,j){ return color(d, j, i);  })
 		  .attr("stroke-width", 2)
-		  .attr("transform", "translate("+bars.attr('width') / 2+",0)")
+		  .attr("transform", "translate("+offsetLine+",0)")
 		  .attr("text-anchor", "middle")
 		  .attr("offset", 20)
           .attr("fill", "none");
@@ -400,7 +413,7 @@ nv.models.tdMultiBar = function() {
         		.attr("cx", function(d) { return nv.utils.NaNtoZero(x(getX(d))); })
         		.attr("cy", function(d) { return nv.utils.NaNtoZero(y(getY(d))); })
         		
-        		.attr("transform", "translate("+bars.attr('width') / 2+",0)")
+        		.attr("transform", "translate("+offsetLine+",0)")
         		.attr("class", "tooltips")
         		.style("fill", "yellow")
         		.style("stroke", "yellow")
