@@ -97,7 +97,13 @@ nv.models.tdMultiBarLineChart = function() {
       chart.container = this;
 
       //set state.disabled
-      state.disabled = data.map(function(d) { return !!d.disabled; });
+      state.disabled = data.map(function(d) {
+      	if(state.stacked != false){
+      		d.type = 'bar';
+      	}
+      	
+      	return !!d.disabled;
+      });
 
       if (!defaultState) {
         var key;

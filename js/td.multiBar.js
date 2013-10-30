@@ -410,8 +410,8 @@ nv.models.tdMultiBar = function() {
 		var newcircle = circle.enter()
               .append("circle")
                 .attr("r", 2)
-        		.attr("cx", function(d) { return nv.utils.NaNtoZero(x(getX(d))); })
-        		.attr("cy", function(d) { return nv.utils.NaNtoZero(y(getY(d))); })
+        		.attr("cx", function(d , i) { return nv.utils.NaNtoZero(x(getX(d))); })
+        		.attr("cy", function(d , i) { return nv.utils.NaNtoZero(y(getY(d))); })
         		
         		.attr("transform", "translate("+offsetLine+",0)")
         		.attr("class", "tooltips")
