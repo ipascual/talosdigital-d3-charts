@@ -418,6 +418,11 @@ nv.models.tdMultiBar = function() {
         		.style("fill", "yellow")
         		.style("stroke", "yellow")
         		.style("stroke-width", "4px")
+        		.style("opacity", 0)
+        		.transition()
+        		.duration(1000)
+        		.delay(function(d,i){ return 150 * i })
+				.style("opacity",100)
         		.on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
                     d3.select(this).classed('hover', true);
                     dispatch.elementMouseover({
