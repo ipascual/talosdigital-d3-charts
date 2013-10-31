@@ -33,7 +33,7 @@ nv.models.tdMultiBarLineChart = function() {
       }
     , x //can be accessed via chart.xScale()
     , y //can be accessed via chart.yScale()
-    , state = { stacked: false }
+    , state = { stacked: true }
     , defaultState = null
     , noData = "No Data Available."
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
@@ -42,7 +42,7 @@ nv.models.tdMultiBarLineChart = function() {
     ;
 
   multibar
-    .stacked(false)
+    .stacked(true)
     ;
   xAxis
     .orient('bottom')
@@ -77,7 +77,7 @@ nv.models.tdMultiBarLineChart = function() {
         y = yAxis.tickFormat()(multibar.y()(e.point, e.pointIndex)),
         content = tooltip(e.series.key, x, y, e, chart);
 
-		nv.tooltip.show([left, top], content, e.value < 0 ? 'n' : 's', null, offsetElement);
+                nv.tooltip.show([left, top], content, e.value < 0 ? 'n' : 's', null, offsetElement);
   };
 
   //============================================================
@@ -93,16 +93,18 @@ nv.models.tdMultiBarLineChart = function() {
           availableHeight = (height || parseInt(container.style('height')) || 400)
                              - margin.top - margin.bottom;
 
-      chart.update = function() { d3.selectAll('.newline').remove();d3.selectAll('.tooltips').remove(); container.transition().duration(transitionDuration).call(chart); };
+      chart.update = function() { d3.selectAll('path').remove();d3.selectAll('.nv-barsWrap circle').remove(); container.transition().duration(transitionDuration).call(chart); };
       chart.container = this;
-
+      
       //set state.disabled
       state.disabled = data.map(function(d) {
-      	if(state.stacked != false){
+      	if(state.stacked != null){stateofall = state;}
+      	if(stateofall.stacked == false && d.type == 'line'){
+      		d.line = true;
       		d.type = 'bar';
       	}
       	
-      	return !!d.disabled;
+      	return !!d.disabled; 
       });
 
       if (!defaultState) {
@@ -347,16 +349,16 @@ nv.models.tdMultiBarLineChart = function() {
               
             multibar.stacked(false);
             d3.selectAll('path').transition()
-    		.delay(function(d,i) { 
-    			d.type = "bar";
-    		});
-    		d3.selectAll("rect.nv-bar").attr("test", "grouped");
-    		chart.update();
+                    .delay(function(d,i) { 
+                            d.type = "bar";
+                    });
+                    d3.selectAll("rect.nv-bar").attr("test", "grouped");
+                    chart.update();
             break;
           case 'Stacked':
             multibar.stacked(true);
             //work in progress
-			reloadchart();
+                        reloadchart();
             break;
         }
 
@@ -366,10 +368,10 @@ nv.models.tdMultiBarLineChart = function() {
         chart.update();
       });
 
-	  
-	  
-	  
-	  interactiveLayer.dispatch.on('elementMousemove', function(e) {
+          
+          
+          
+          interactiveLayer.dispatch.on('elementMousemove', function(e) {
           lines.clearHighlights();
           var singlePoint, pointIndex, pointXLocation, allData = [];
           data
@@ -423,8 +425,8 @@ nv.models.tdMultiBarLineChart = function() {
           dispatch.tooltipHide();
           lines.clearHighlights();
       });
-	  
-	  
+          
+          
 
       dispatch.on('tooltipShow', function(e) {
         if (tooltips) showTooltip(e, that.parentNode);
