@@ -409,22 +409,21 @@ nv.models.tdMultiBar = function() {
 
 		var newcircle = circle.enter()
               .append("circle")
-                .attr("r", 2)
+                .attr("r", 4)
         		.attr("cx", function(d , i) { return nv.utils.NaNtoZero(x(getX(d))); })
         		.attr("cy", function(d , i) { return nv.utils.NaNtoZero(y(getY(d))); })
-        		
         		.attr("transform", "translate("+offsetLine+",0)")
         		.attr("class", "tooltips")
         		.style("fill", "yellow")
-        		.style("stroke", "yellow")
-        		.style("stroke-width", "4px")
-        		.style("opacity", 0)
-        		.transition()
-        		.duration(1000)
-        		.delay(function(d,i){ return 150 * i })
-				.style("opacity",100)
+        		.style("stroke-width", "0px")
         		.on('mouseover', function(d,i) { //TODO: figure out why j works above, but not here
                     d3.select(this).classed('hover', true);
+                    d3.select(this)
+                    .transition()
+			    	.duration(300)
+                    .style("stroke", "yellow")
+                    .style("stroke-width", "8px")
+                    ;
                     dispatch.elementMouseover({
                       value: getY(d,i),
                       point: d,
@@ -437,6 +436,11 @@ nv.models.tdMultiBar = function() {
                   })
                 .on('mouseout', function(d,i) {
                     d3.select(this).classed('hover', false);
+                    d3.select(this)
+                    .transition()
+			    	.duration(300)
+                    .style("stroke-width", "0px")
+                    ;
                     dispatch.elementMouseout({
                       value: getY(d,i),
                       point: d,
